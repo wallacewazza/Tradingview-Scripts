@@ -1,0 +1,30 @@
+//@version=4
+study(title="PSAR Ichimoku Cloud", shorttitle="PSAR Ichimoku Cloud", overlay=true)
+
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+x = sar(start, increment, maximum)
+
+conversionPeriods = input(25, minval=1, title="Conversion Line Periods"),
+basePeriods = input(26, minval=1, title="Base Line Periods")
+laggingSpan2Periods = input(52, minval=1, title="Lagging Span 2 Periods"),
+displacement = input(1, minval=1, title="Displacement")
+
+donchian(len) => avg(lowest(len), highest(len))
+
+conversionLine = donchian(conversionPeriods)
+baseLine = donchian(basePeriods)
+leadLine1 = avg(conversionLine, baseLine)
+leadLine2 = donchian(laggingSpan2Periods)
+
+plot(conversionLine, color=#0496ff, title="Conversion Line")
+plot(baseLine, color=#991515, title="Base Line")
+plot(x, offset = -displacement + 1, color=color.blue, linewidth=2, title="Lagging Span", transp=0)
+
+p1 = plot(leadLine1, offset = displacement - 1, color=color.green,
+ title="Lead 1")
+p2 = plot(leadLine2, offset = displacement - 1, color=color.red, 
+ title="Lead 2")
+fill(p1, p2, color = leadLine1 > leadLine2 ? #00168f : color.red)
+
