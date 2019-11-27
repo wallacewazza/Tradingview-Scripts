@@ -1,0 +1,31 @@
+
+//@version=4
+study(title="PORTFOLIO MAX SHARPE RATIO", overlay=false, format=format.price)
+//US Total
+sym = "SPY", res = timeframe.period, source = close
+//Emerging Market
+sym2 = "EWZ"
+//Equity
+sym3 = "AAPL"
+//Defence
+sym4 = "TLT" 
+
+x = security(sym, res, source)
+y = security(sym2, res, source)
+x1 = security(sym3, res, source)
+y1 = security(sym4, res, source)
+
+avv = avg(x,y,x1,y1)
+
+
+plot(avv, color=color.blue, linewidth=4, style=plot.style_stepline)
+
+
+
+
+len = input(25, minval=1, title="Length")
+emaline = ema(avv, len)
+plot(emaline, title="EMA", color=color.green, linewidth=4)
+
+
+
