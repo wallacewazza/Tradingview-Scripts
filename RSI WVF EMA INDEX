@@ -1,0 +1,140 @@
+//@version=4
+study(title="RSI WVF EMA INDEX", format=format.price, precision=2)
+
+src = close
+
+shortlen = input(12, minval=1)
+longlen = input(25, minval=1)
+x = input(7.0)
+
+smma = 0.0
+smma := na(smma[1]) ? sma(src, shortlen) : (smma[1] * (shortlen - x) + src) / shortlen
+
+smma2 = 0.0
+smma2 := na(smma2[1]) ? sma(src, longlen) : (smma[1] * (longlen - x) + src) / longlen
+
+short = rsi(ohlc4, smma)
+long = rsi(ohlc4, smma2)
+
+
+osc = 100 * (short -  long) / long
+
+hline(0, title="Zero")
+
+col_grow_above = #B2DFDB //BrightBlue
+col_grow_below = #EF5350 //DarkerBlue
+col_fall_above = #26A69A //BrightRed
+col_fall_below = #FFCDD2 //DarkRed
+
+
+
+
+plot(osc *-1,style=plot.style_columns, color=(osc<=0 ? (osc[1] < osc ? col_grow_above : col_fall_above) : (osc[1] < osc ? col_grow_below : col_fall_below) ), transp=0 )
+
+
+
+
+
+
+//=================
+
+
+source = close
+length = input(14, minval=1)
+smoothlen = input(2)
+
+
+h = highest(source, length)
+l = lowest(source, length)
+
+i = (close - l) / (h - l)
+
+
+
+//=================
+
+
+//ROME WAS NOT BUILT IN A DAY!
+
+//Inputs Tab Criteria.
+pd = input(22, title="LookBack Period High")
+
+
+//Williams Vix Fix Formula
+wvf = (highest(close, pd) - low) / highest(close, pd) * 100
+
+
+entryline = (lowest(close, 22) - high) / lowest(close, 22) * 100
+v = (lowest(close, 22) - high) / lowest(close, 22) * 100
+
+
+
+
+//Coloring Criteria of Williams Vix Fix
+col = wvf >= x ? #9e0000 : color.gray
+
+
+
+//=================
+
+
+
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+
+psar = sar(start, increment, maximum)
+
+///////Smooth
+
+lenx = input(1, minval=1, title="smooth Length")
+smma1 = 0.0
+smma1 := na(smma1[1]) ? sma(psar, lenx) : (smma1[1] * (lenx - 1) + psar) / lenx
+
+////////////////////// BB
+
+blength = input(5)
+multi = input(5)
+
+dev = multi * stdev(smma, blength)
+upper = smma1 + dev
+lower = smma1 - dev
+//////////===========PLOTS
+
+
+//=================
+
+
+
+len = input(25, minval=1, title="ema length")
+srca = input(ohlc4, title="Source")
+out = ema(srca, len)
+
+//================
+
+
+
+volumeshort = input(5, minval=1)
+volumelong = input(10, minval=1)
+shortt = ema(volume, volumeshort)
+longg = ema(volume, volumelong)
+volumeosc = 100 * (shortt - longg) / longg
+
+
+//===============
+
+
+chshort = input(3,minval=1), chlong = input(10,minval=1)
+chosc = ema(accdist, chshort) - ema(accdist, chlong)
+
+
+
+buy = osc < 0 and i > 0.5 and wvf >= v and low > out and chosc > 0 ? #00168f : na
+
+
+sell = osc > 0 and i < 0.5 and wvf >= v and high < out and chosc < 0 ? #531313 : na
+
+
+bgcolor(color=buy, transp=60)
+bgcolor(color=sell, transp=60)
+
