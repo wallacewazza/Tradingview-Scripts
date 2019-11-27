@@ -1,0 +1,34 @@
+//@version=4
+study("Williams Vix Fix WVF ", overlay=false)
+
+
+
+//ROME WAS NOT BUILT IN A DAY!
+
+//Inputs Tab Criteria.
+pd = input(22, title="LookBack Period High")
+
+
+//Williams Vix Fix Formula
+wvf = (highest(close, pd) - low) / highest(close, pd) * 100
+
+
+entryline = (lowest(close, 22) - high) / lowest(close, 22) * 100
+v = (lowest(close, 22) - high) / lowest(close, 22) * 100
+
+
+x = entryline *-1
+
+
+
+//Coloring Criteria of Williams Vix Fix
+col = wvf >= x ? #9e0000 : color.gray
+
+
+plot(wvf * -1, title="Williams Vix Fix", style=plot.style_columns, linewidth=4, color=col)
+
+//Plots for Williams Vix Fix Histogram and Alerts
+plot(v, style=plot.style_line, linewidth=2, color=#006dff, transp=0, title=" Signal Line")
+plot(x, style=plot.style_line, linewidth=2, color=#006dff, transp=100, title=" X Line" )
+
+
