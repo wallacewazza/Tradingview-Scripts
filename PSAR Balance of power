@@ -1,0 +1,30 @@
+//@version=4
+study(title="PSAR / Balance of Power / EMA", format=format.price, precision=2)
+
+//===========PSAR
+
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+psar = sar(start, increment, maximum)
+
+//===========
+
+x = (psar - open) / (high - low)
+
+lenn = input(25, minval=1, title="EMA Length")
+outema = ema(close, lenn)
+
+
+buy = x < -0.0001 and low > outema ? #00168f : na
+
+sell = x > 0.0001 and high < outema ? #531313 : na
+
+
+
+bgcolor(color=buy, transp=80)
+bgcolor(color=sell, transp=80)
+
+
+plot = plot(x *-1, color=x > 0 ? color.red : color.blue, style=plot.style_columns)
+
