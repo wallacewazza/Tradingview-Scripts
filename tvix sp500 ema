@@ -1,0 +1,31 @@
+//@version=4
+strategy(title="TVIX/SP500 EMA", overlay=false, default_qty_type = strategy.percent_of_equity, default_qty_value = 100, initial_capital=10000 )
+sym = "TVIX", res = timeframe.period, source = close
+sym2 = "SPX500USD"
+
+
+direction = input(0, title = "Strategy Direction", type=input.integer, minval=-1, maxval=1)
+
+strategy.risk.allow_entry_in(direction == 0 ? strategy.direction.all : (direction < 0 ? strategy.direction.short : strategy.direction.long))
+
+
+x = security(sym, res, source)
+y = security(sym2, res, source)
+
+
+avv = avg(x,y)
+
+
+plot(avv, color=color.purple, linewidth=2)
+
+
+len = input(25, minval=1, title="Length")
+out = ema(avv, len)
+plot(out, title="EMA", color=color.blue)
+
+buy = crossover(avv,out)
+
+sell = crossunder(avv,out)
+
+strategy.entry("enter long", true, 100, when = buy) // enter long by market if current open great then previous high
+strategy.entry("enter short", false, 100, when = sell) // enter short by market if current open less then previous low
