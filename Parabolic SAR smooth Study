@@ -1,0 +1,36 @@
+
+//@version=4
+study("Parabolic SAR smooth Study", overlay=true)
+
+
+///////////////SAR
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+
+out = sar(start, increment, maximum)
+
+///////Smooth
+len = input(1, minval=1, title="smooth Length")
+smma = 0.0
+smma := na(smma[1]) ? sma(out, len) : (smma[1] * (len - 1) + out) / len
+
+////////////////////// BB
+blength = input(5)
+multi = input(5)
+
+dev = multi * stdev(smma, blength)
+upper = smma + dev
+lower = smma - dev
+
+///////////////////// PLOTS
+p1 = plot(upper, color=color.green, title="Upper")
+p2 = plot(lower, color=color.red, title="Lower")
+fill(p1, p2)
+
+plot(out, style=plot.style_line, color=color.blue, title="Out")
+
+
+
+   
+
