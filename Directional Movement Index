@@ -1,0 +1,27 @@
+//@version=4
+study(title="Directional Movement Index", shorttitle="DMI", format=format.price, precision=4)
+len = input(14, minval=1, title="DI Length")
+lensig = input(14, title="ADX Smoothing", minval=1, maxval=50)
+
+up = change(high)
+down = -change(low)
+plusDM = na(up) ? na : (up > down and up > 0 ? up : 0)
+minusDM = na(down) ? na : (down > up and down > 0 ? down : 0)
+trur = rma(tr, len)
+plus = fixnan(100 * rma(plusDM, len) / trur)
+minus = fixnan(100 * rma(minusDM, len) / trur)
+sum = plus + minus
+adx = 100 * rma(abs(plus - minus) / (sum == 0 ? 1 : sum), lensig)
+
+plot(plus, color=color.blue, title="+DI", linewidth=3, transp=0)
+
+plot(minus, color=color.red, title="-DI",linewidth=3, transp=0)
+plot(adx, color=color.black, title="ADX",linewidth=3, style=plot.style_stepline, transp=0)
+
+x = hline(20)
+y = hline(0)
+z = hline(40)
+
+fill(x,y, color=color.purple, transp=75)
+
+
