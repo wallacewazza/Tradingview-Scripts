@@ -1,0 +1,59 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © sizibawealthservices
+
+//@version=4
+strategy("Thanos", overlay=true, default_qty_type = strategy.percent_of_equity, default_qty_value = 100, initial_capital=10000)
+
+direction = input(0, title = "Strategy Direction", type=input.integer, minval=-1, maxval=1)
+strategy.risk.allow_entry_in(direction == 0 ? strategy.direction.all : (direction < 0 ? strategy.direction.short : strategy.direction.long))
+
+//mom=1
+len = 10
+src = close
+mom = src - src[len]
+
+///////////////////=2
+//cci
+length = 20
+ma = sma(src, length)
+cci = (src - ma) / (0.015 * dev(src, length))
+
+//////////////////=3
+//bop
+bop = (close - open) / (high - low)
+
+/////////////////=4
+//CMF
+clength = 20
+ad = close==high and close==low or high==low ? 0 : ((2*close-low-high)/(high-low))*volume
+cmf = sum(ad, clength) / sum(volume, clength)
+
+/////////////////=5
+//COPPORK CURVE
+wmaLength = 10
+longRoCLength = 14
+shortRoCLength = 11
+
+source = close
+
+curve = wma(roc(source, longRoCLength) + roc(source, shortRoCLength), wmaLength)
+
+///////////////=6
+//EASE OF MOMVEMENT
+div = 10000
+elength = 14
+eom = sma(div * change(hl2) * (high - low) / volume, elength)
+
+//////=7
+xy = ema(close,14)
+xz = ema(close, 30)
+
+
+
+longCondition = mom > 0 and cci > 0 and bop > 0 and cmf > 0 and curve > 0 and eom > 0 and xy > xz
+if (longCondition)
+    strategy.entry("My Long Entry Id", strategy.long)
+
+shortCondition = mom < 0 and cci < 0 and bop < 0 and cmf < 0 and curve < 0 and eom < 0 and xy < xz
+if (shortCondition)
+    strategy.entry("My Short Entry Id", strategy.short)
