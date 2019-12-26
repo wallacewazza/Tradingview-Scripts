@@ -1,0 +1,78 @@
+//@version=4
+study(title="All Weather/ Sharpe", overlay=false, format=format.price)
+res = timeframe.period
+source = close
+
+
+
+//============================================
+
+//US Total
+sym = input("VTI")
+
+//5.90
+x = security(sym, res, source)
+spyp = input(70, title="VTI")
+spy = x + x * spyp / 100
+
+
+//============================================
+//Emerging Market
+sym2 = input("IEF")
+//5.45
+y = security(sym2, res, source)
+ewzp = input(85, title="IEF")
+ewz = y + y * ewzp / 100
+
+
+//============================================
+//Equity
+sym3 = input("AAPL")
+
+//38.51%
+x1 = security(sym3, res, source)
+aaplp = input(60, title="AAPL")
+aapl = x1 + x1 * aaplp / 100
+
+
+//============================================
+//Defence
+sym4 = input("TLT")
+
+//50.14
+y1 = security(sym4, res, source) 
+tltp = input(92.50, title="TLT")
+tlt = y1 + y1 * tltp / 100
+
+//============================================
+
+//Equity
+sym5 = input("GLD")
+
+//38.51%
+x15 = security(sym5, res, source)
+aaplp5 = input(92.50, title="GLD")
+aapl5 = x15 + x15 * aaplp5 / 100
+
+
+//============//=================//===========
+//Engine
+avv = avg(spy,ewz,aapl,tlt, aapl5)
+//add = spy + ewz + aapl + tlt
+
+
+
+
+
+//========================ema
+
+len = input(25, minval=1, title="long")
+emaline = ema(avv, len)
+
+//============//=================//===========
+//Plots
+
+p0 = plot(avv, color=color.red, linewidth=2, style=plot.style_stepline)
+
+p1 = plot(emaline, title="EMA", color=color.green, linewidth=2)
+fill(p0,p1, color=color.blue)
