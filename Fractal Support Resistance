@@ -1,0 +1,18 @@
+//@version=2
+//synapticex.com
+study("Fractal Support Resistance", shorttitle="FSR", overlay=true)
+tf = input(title="Resolution", type=resolution, defval = "current")
+vamp = input(title="VolumeMA", type=integer, defval=6)
+vam = sma(volume, vamp)
+
+up = high[3]>high[4] and high[4]>high[5] and high[2]<high[3] and high[1]<high[2] and volume[3]>vam[3]
+down = low[3]<low[4] and low[4]<low[5] and low[2]>low[3] and low[1]>low[2] and volume[3]>vam[3]
+fractalup =  up ? high[3] : fractalup[1] 
+fractaldown = down ? low[3] : fractaldown[1]
+
+fuptf = security(tickerid,tf == "current" ? period : tf, fractalup)
+fdowntf = security(tickerid,tf == "current" ? period : tf, fractaldown)
+
+plot(fuptf, "FractalUp", color=lime, linewidth=1, style=cross, transp=0, offset =-3, join=false)
+plot(fdowntf, "FractalDown", color=red, linewidth=1, style=cross, transp=0, offset=-3, join=false)
+
