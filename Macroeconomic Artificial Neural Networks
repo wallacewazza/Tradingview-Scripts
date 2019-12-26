@@ -1,0 +1,250 @@
+
+
+//@version=4
+study("Macroeconomic Artificial Neural Networks" , overlay = false)
+src = close 
+zero = 0.00
+
+
+// Ticker Value Function 
+
+tickerValue (expression, tkr) => security(tkr, timeframe.period, expression)
+
+// Definition : MACROECONOMIC PARAMETERS
+
+// Effective Federal Funds Rate (FEDFUNDS)
+
+_fedfunds = tickerValue(close, "FRED:FEDFUNDS")
+
+// Initial Claims (ICSA)
+
+_icsa = tickerValue(close, "FRED:ICSA")
+
+// Civilian Unemployment Rate (UNRATE)
+
+_unrate = tickerValue(close, "FRED:UNRATE")
+
+// 10 Year Treasury Constant Maturity Rate (DGS10)
+
+_dgs10 = tickerValue(close, "FRED:DGS10")
+
+// Gross Domestic Product , 1 Decimal (GDP)
+
+_gdp = tickerValue(close, "FRED:GDP")
+
+// Trade Weighted US Dollar Index : Major Currencies (DTWEXM)
+
+_dtwexm = tickerValue(close, "FRED:DTWEXM")
+
+// Consumer Price Index For All Urban Consumers (CPIAUCSL)
+
+_cpiaucsl = tickerValue(close, "FRED:CPIAUCSL")
+
+// M1 Money Stock (M1) 
+
+_m1 = tickerValue(close, "FRED:M1")
+
+// M2 Money Stock (M2)
+
+_m2 = tickerValue(close, "FRED:M2")
+
+
+// 2 - Year Treasury Constant Maturity Rate (DGS2)
+
+_dgs2 = tickerValue(close, "FRED:DGS2")
+
+// 30 Year Treasury Constant Maturity Rate (DGS30)
+
+_dgs30 = tickerValue(close, "FRED:DGS30")
+
+
+// Industrial Production Index (INDPRO)
+
+_indpro = tickerValue(close, "FRED:INDPRO")
+
+
+// 5-YEAR TREASURY CONSTANT MATURITY RATE (FRED : DGS5)
+
+_dgs5 = tickerValue(close, "FRED:DGS5")
+
+
+// LIGHT WEIGHT VEHICLE SALES: AUTOS & LIGHT TRUCKS (ALTSALES)
+
+_altsales = tickerValue(close , "FRED:ALTSALES")
+
+// CIVILIAN EMPLOYMENT-POPULATION RATIO (EMRATIO)
+
+_emratio = tickerValue(close , "FRED:EMRATIO")
+
+// CAPACITY UTILIZATION (TOTAL INDUSTRY) (TCU)
+
+_tcu = tickerValue(close , "FRED:TCU")
+
+// AVERAGE (MEAN) DURATION OF UNEMPLOYMENT (UEMPMEAN)
+
+_uempmean = tickerValue(close , "FRED:UEMPMEAN")
+
+// MANUFACTURING EMPLOYMENT INDEX (MAN_EMPL)
+
+_manempl = tickerValue(close , "ISM:MAN_EMPL")
+
+// FRED: NEWORDER 
+
+_neworder = tickerValue(close , "FRED:NEWORDER")
+
+// ISM MANUFACTURING INDEX (MAN : PMI)
+
+_manpmi = tickerValue(close , "ISM:MAN_PMI")
+
+
+// CHANGE 
+
+// DEEP LEARNING INDICATORS
+
+
+_indicator1 = ((_fedfunds - _fedfunds[1] ) / (_fedfunds[1]))
+_indicator2 = ((_icsa - _icsa[1] ) / (_icsa[1]))
+_indicator3 = ((_unrate - _unrate[1] ) / (_unrate[1]))
+_indicator4 = ((_dgs10 - _dgs10[1] ) / (_dgs10[1]))
+_indicator5 = ((_gdp - _gdp[1] ) / (_gdp[1]))
+_indicator6 = ((_dtwexm - _dtwexm[1] ) / (_dtwexm[1]))
+_indicator7  = ((_cpiaucsl - _cpiaucsl[1] ) / (_cpiaucsl[1]))
+_indicator8  = ((_m1 - _m1[1] ) / (_m1[1]))
+_indicator9  = ((_m2 - _m2[1] ) / (_m2[1]))
+_indicator10  = ((_dgs2 - _dgs2[1] ) / (_dgs2[1]))
+_indicator11  = ((_dgs30 - _dgs30[1] ) / (_dgs30[1]))
+_indicator12  = ((_indpro - _indpro[1] ) / (_indpro[1]))
+_indicator13  = ((_dgs5 - _dgs5[1] ) / (_dgs5[1]))
+_indicator14  = ((_altsales - _altsales[1] ) / (_altsales[1]))
+_indicator15  = ((_emratio - _emratio[1] ) / (_emratio[1]))
+_indicator16  = ((_tcu - _tcu[1] ) / (_tcu[1]))
+_indicator17  = ((_uempmean - _uempmean[1] ) / (_uempmean[1]))
+_indicator18  = ((_manempl - _manempl[1] ) / (_manempl[1]))
+_indicator19  = ((_manpmi - _manpmi[1] ) / (_manpmi[1]))
+
+
+src_chg  = ((src - src[1]) / (src[1]))
+
+
+// Inputs on Tangent Function : 
+
+tangentdiff(_src) => nz((_src - _src[1]) / _src[1] ) 
+
+
+// Deep Learning Activation Function (Tanh) : 
+
+ActivationFunctionTanh(v) => (1 - exp(-2 * v))/( 1 + exp(-2 * v))
+
+
+// DEEP LEARNING 
+
+// INPUTS : 
+
+input_1 = tangentdiff(_indicator1)
+input_2 = tangentdiff(_indicator2)
+input_3 = tangentdiff(_indicator3)
+input_4 = tangentdiff(_indicator4)
+input_5 = tangentdiff(_indicator5)
+input_6 = tangentdiff(_indicator6)
+input_7 = tangentdiff(_indicator7)
+input_8 = tangentdiff(_indicator8)
+input_9 = tangentdiff(_indicator9)
+input_10 = tangentdiff(_indicator10)
+input_11 = tangentdiff(_indicator11)
+input_12 = tangentdiff(_indicator12)
+input_13 = tangentdiff(_indicator13)
+input_14 = tangentdiff(_indicator14)
+input_15 = tangentdiff(_indicator15)
+input_16 = tangentdiff(_indicator16)
+input_17 = tangentdiff(_indicator17)
+input_18 = tangentdiff(_indicator18)
+input_19 = tangentdiff(_indicator19)
+
+
+// LAYERS : 
+
+// Input Layers 
+
+n_0 = ActivationFunctionTanh(input_1 + 0)   
+n_1 = ActivationFunctionTanh(input_2 + 0) 
+n_2 = ActivationFunctionTanh(input_3 + 0) 
+n_3 = ActivationFunctionTanh(input_4 + 0) 
+n_4 = ActivationFunctionTanh(input_5 + 0)
+n_5 = ActivationFunctionTanh(input_6 + 0)
+n_6 = ActivationFunctionTanh(input_7 + 0)
+n_7 = ActivationFunctionTanh(input_8 + 0)
+n_8 = ActivationFunctionTanh(input_9 + 0)
+n_9 = ActivationFunctionTanh(input_10 + 0)
+n_10 = ActivationFunctionTanh(input_11 + 0)
+n_11 = ActivationFunctionTanh(input_12 + 0)
+n_12 = ActivationFunctionTanh(input_13 + 0)
+n_13 = ActivationFunctionTanh(input_14 + 0)
+n_14 = ActivationFunctionTanh(input_15 + 0)
+n_15 = ActivationFunctionTanh(input_16 + 0)
+n_16 = ActivationFunctionTanh(input_17 + 0)
+n_17 = ActivationFunctionTanh(input_18 + 0)
+n_18 = ActivationFunctionTanh(input_19 + 0)
+
+
+n_19 = ActivationFunctionTanh(3.344309  * n_0  + -0.535849  * n_1  + 14.119536 * n_2  + -1.228040 * n_3  + -2.399439  * n_4  + -2.572395  * n_5  + 
+                             0.640904   * n_6  + 1.387636   * n_7  + 0.759533  * n_8  + -1.366405 * n_9  + -1.563421  * n_10 + -0.572414  * n_11 + 
+                             -2.058364  * n_12 + -7.678257  * n_13 + -0.581886 * n_14 + -0.810883 * n_15 + -0.359469  * n_16 + 2.524149   * n_17 + 
+                             -2.019416  * n_18 + -3.174615 ) 
+
+n_20 = ActivationFunctionTanh(1.323228  * n_0  + 1.501834   * n_1  +  13.933911 * n_2  +  -1.070579 * n_3  + -2.382640   * n_4  + -2.535831  * n_5  + 
+                              0.639257  * n_6  + 1.379131   * n_7  +  0.748909  * n_8  +  -1.287572 * n_9  + -1.493350   * n_10 + -0.566746  * n_11 + 
+                              -1.994649 * n_12 + -7.590407  * n_13 +  -0.574632 * n_14 +  -0.803075 * n_15 + -0.366707   * n_16 + 2.208417   * n_17 + 
+                              -1.984236 * n_18 + -3.013914 ) 
+
+_output =  ActivationFunctionTanh(5.618687 * n_19 + 5.423183 * n_20 + -0.193927  )
+
+
+// SEED 
+
+_chg_src = tangentdiff(src) * 100
+
+_seed = (_output - _chg_src) 
+
+
+// MACD : SEED 
+
+
+fastLength   = 12
+slowlength   = 26
+signalLength = 9
+
+
+macd   = ema(_seed, fastLength) - ema(_seed, slowlength)
+signal = ema(macd, signalLength)
+	   
+
+hist = macd - signal
+
+// Conditions : 
+
+positive_condition = hist < 0 
+negative_condition = hist > 0
+
+neg_moment = crossover(macd,signal)
+pos_moment = crossunder(macd,signal) 
+
+col_bg = pos_moment ? color.teal : neg_moment ? color.maroon : na
+
+
+//Plot data
+
+col_hist() => positive_condition ? color.new(#F5FFFA,0) : negative_condition ? color.new(#FF355E,0) : color.new(color.yellow,0)
+col_histo = col_hist()
+
+//Plot data
+
+hline(0, color=#FFB300, linewidth = 2)
+plot(hist*-1, color=(positive_condition ? #00A86B : #D40000), style=plot.style_histogram,linewidth= 5 , title="Area", transp=30)
+plot(hist*-1, color=col_histo,style =plot.style_histogram, title="Forecast", linewidth=1)
+bgcolor(col_bg , transp = 58 , title = "Background Color")
+
+
+// Alerts 
+
+alertcondition(pos_moment , title='Buy Signal' , message='Buy Signal ')
+alertcondition(neg_moment , title='Sell Signal', message='Sell Signal ')
