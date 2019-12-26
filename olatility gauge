@@ -1,0 +1,33 @@
+//@version=4
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © sizibawealthservices
+
+
+study("Volatility gauge")
+
+
+length = input(14, minval=1)
+
+h = highest(close, length)
+l = lowest(close, length)
+
+i = (close - l) / (h - l)
+
+VIX = security('CBOE:VIX', timeframe.period, i)
+VXXLE = security('CBOE:VXXLE', timeframe.period, i)
+TYVIX = security('CBOE:TYVIX', timeframe.period, i)
+
+cci = cci(close, 20)
+
+roc = roc(close, 14)
+
+avg = avg(VIX, VXXLE, TYVIX, cci,roc)/4
+plot = plot(avg, color=avg > 0.5 ? color.blue : color.red, style=plot.style_columns, linewidth=3, title="Volatility")
+
+out = ema(avg, length)
+plot(out, color=color.green, title="EMA")
+
+
+
+
+
