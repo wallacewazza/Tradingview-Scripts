@@ -1,0 +1,29 @@
+
+//@version=4
+study(title="Pairs Trading", overlay=false, format=format.price)
+sym = input("TVIX"), res = timeframe.period, source = close
+sym2 = input("SPX")
+sym3 = input("SPX")
+
+
+
+x = security(sym, res, source)
+y = security(sym2, res, source)
+z = security(sym3, res, source)
+
+AverageA = (x+y+z)/3 
+
+xx = x/AverageA
+yy = y/AverageA
+zz = z/AverageA
+
+v = (xx/yy/zz)
+
+T = percentrank(v, 200)
+
+
+plotT = plot(T, color=color.blue, linewidth=2, style=plot.style_stepline)
+
+highline = hline(90)
+midline = hline(50)
+lowline= hline(10)
