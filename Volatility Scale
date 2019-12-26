@@ -1,0 +1,14 @@
+//@version=4
+study("Volatility Scale", overlay=false, precision=3)
+
+x =variance(close, 5) 
+
+y = atr(10)
+
+delta = avg(x,y)/4
+
+
+zulu = ema(delta,200)
+
+plot(delta, style=plot.style_columns)
+plot(zulu, color=color.red)
