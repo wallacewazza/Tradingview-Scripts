@@ -1,6 +1,6 @@
 
 //@version=4
-study(title="Pairs Trading", overlay=false, format=format.price)
+study(title="Playing With Pairs Trading Code", overlay=false, format=format.price)
 sym = input("TVIX"), res = timeframe.period, source = close
 sym2 = input("SPX")
 sym3 = input("SPX")
