@@ -2,6 +2,7 @@
 study(title="Directional Movement Index", shorttitle="DMI", format=format.price, precision=4)
 len = input(14, minval=1, title="DI Length")
 lensig = input(14, title="ADX Smoothing", minval=1, maxval=50)
+//
 
 up = change(high)
 down = -change(low)
