@@ -3,7 +3,7 @@
 // © sizibawealthservices
 
 
-study("Volatility gauge")
+study("Volatility Gauge")
 
 
 length = input(14, minval=1)
