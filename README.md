@@ -17,7 +17,9 @@ One of my favourites I will study is the PSAR, BB Bands strategy. Quantconnect's
 
 I expect this project to take me 6-8 months to get a solid grasp of conversion, Algo and quant-coding.
 
-In 2021 I hope I will be a great coder, hopefully, study sentiment-based Quants.
+In 2021 I hope I will be a great coder, hopefully, study sentiment-based Quants.More updates coming soon.
 
-More Updates soon
+Best Wishes
+Wallace Siziba
+
 
