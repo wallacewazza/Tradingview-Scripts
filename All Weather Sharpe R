@@ -1,7 +1,13 @@
 //@version=4
-study(title="All Weather/ Sharpe", overlay=false, format=format.price)
+study(title="All Weather/ Sharpe R", overlay=false, format=format.price)
 res = timeframe.period
 source = close
+
+//Ray Dalio's long only All weather portfolio, replaced "DBC" with "AAPL" and the results an increased Sharpe ratio w decresed volatility and deviation.
+//This is my first attempt at portfolio construction
+//ADD the Securities to portfolio visualiser for more stress tests
+//Ofcourse you can trade each on their own, however the goal is to wait until ma crossover before entering all positions at the equivalant percentages.
+//I will quant-code this very soon
 
 
 
@@ -10,7 +16,7 @@ source = close
 //US Total
 sym = input("VTI")
 
-//5.90
+//5.90%
 x = security(sym, res, source)
 spyp = input(70, title="VTI")
 spy = x + x * spyp / 100
@@ -19,7 +25,7 @@ spy = x + x * spyp / 100
 //============================================
 //Emerging Market
 sym2 = input("IEF")
-//5.45
+//5.45%
 y = security(sym2, res, source)
 ewzp = input(85, title="IEF")
 ewz = y + y * ewzp / 100
@@ -39,7 +45,7 @@ aapl = x1 + x1 * aaplp / 100
 //Defence
 sym4 = input("TLT")
 
-//50.14
+//50.14%
 y1 = security(sym4, res, source) 
 tltp = input(92.50, title="TLT")
 tlt = y1 + y1 * tltp / 100
@@ -59,9 +65,6 @@ aapl5 = x15 + x15 * aaplp5 / 100
 //Engine
 avv = avg(spy,ewz,aapl,tlt, aapl5)
 //add = spy + ewz + aapl + tlt
-
-
-
 
 
 //========================ema
