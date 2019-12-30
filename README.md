@@ -8,7 +8,7 @@ University of central lancashire
 
 
 1st stage.
-These are scripts that I have composed learning to code on Tradingview.com throughout 2019. Most are created from curiosity; some are deviations of existing ideas like Pairs trading books and The William Vix Fix Formula for an asset.
+These are scripts that I have composed learning to code on Tradingview.com throughout 2019. Most are created from curiosity; some are deviations of existing ideas like Pairs trading books and The William Vix Fix Formula.
 
 Second Stage.
 In 2020, I am currently studying python in my spare time. Secondly, after getting a decent grasp of the language to convert them into python scripts and use Quantconnent.com's automated algorithm for much more accurate backtest and live auto trials.
