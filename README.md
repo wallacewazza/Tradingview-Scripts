@@ -13,7 +13,7 @@ These are scripts that I have composed learning to code on Tradingview.com throu
 Second Stage.
 In 2020, I am currently studying python in my spare time. Secondly, after getting a decent grasp of the language to convert them into python scripts and use Quantconnent.com's automated algorithm for much more accurate backtest and live auto trials.
 
-One of my favourites I will study is the PSAR, BB Bands strategy. Quantconnect's lean seems more complicated in contrast to Tradingview's pinescript. However, the advantages cant be compared.
+One of my favourites I will study is the PSAR, BB Bands strategy and Max Sharpe  Quantconnect's lean seems more complicated in contrast to Tradingview's pinescript. However, the advantages cant be compared.
 
 I expect this project to take me 6-8 months to get a solid grasp of conversion, Algo and quant-coding.
 
