@@ -1,0 +1,53 @@
+//@version=4
+study("OVERSOLD/OVERBOUGHT")
+//@Github= Wallacewazza
+//@Instagram= Zilch.caeasar 
+//@Gmail= Wallacesiziba@gmail.com
+
+length = input(15, minval=1, title="cci legnth")
+src = input(close, title="Source")
+ma = sma(src, length)
+cci = (src - ma) / (0.015 * dev(src, length))
+
+/////////=============
+
+periodK = input(10, title="K", minval=1)
+periodD = input(3, title="D", minval=1)
+smoothK = input(3, title="Smooth", minval=1)
+k = sma(stoch(close, high, low, periodK), smoothK)
+d = sma(k, periodD)
+
+stochavg = avg(k,d)
+
+
+/////////=============
+
+MFIlength = input(title="MFI Length", type=input.integer, defval=4, minval=1, maxval=2000)
+MFIsrc = hlc3
+MFIupper = sum(volume * (change(MFIsrc) <= 0 ? 0 : MFIsrc), MFIlength)
+MFIlower = sum(volume * (change(MFIsrc) >= 0 ? 0 : MFIsrc), MFIlength)
+mf = rsi(MFIupper, MFIlower)
+
+
+/////////=============
+
+
+Rsilength = input( 6 )
+RsioverSold = input( 30 )
+RsioverBought = input( 70 )
+Rsiprice = close
+
+vrsi = rsi(Rsiprice, Rsilength)
+
+
+/////////=============
+
+buyOS = cci > 200 and stochavg > 80 and mf > 80 and vrsi >= RsioverBought ? #135334 : na
+
+sellOS = cci < -200 and stochavg < 20 and mf < 20 and vrsi <= RsioverSold ? #531313 : na
+
+
+bgcolor(color=buyOS, transp=0)
+bgcolor(color=sellOS, transp=0)
+
+/////////=============
