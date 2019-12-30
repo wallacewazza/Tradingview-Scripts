@@ -4,6 +4,11 @@ study("OVERSOLD/OVERBOUGHT")
 //@Instagram= Zilch.caeasar 
 //@Gmail= Wallacesiziba@gmail.com
 
+//CCI
+//STOCHASTIC
+//MFI
+//RSI
+
 length = input(15, minval=1, title="cci legnth")
 src = input(close, title="Source")
 ma = sma(src, length)
