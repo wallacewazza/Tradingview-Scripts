@@ -1,0 +1,27 @@
+//@version=4
+study("AVG OIL PRICES", overlay=false)
+
+source = close
+length = input(14, minval=1)
+smoothlen = input(2)
+
+
+h = highest(source, length)
+l = lowest(source, length)
+
+i = (close - l) / (h - l)
+
+TVCUSOIL = security('TVC:USOIL', timeframe.period, i)
+TVCUKOIL = security('TVC:UKOIL', timeframe.period, i)
+FX_IDCUSDWTI = security('FX_IDC:USDWTI', timeframe.period, i)
+FX_IDCUSDBRO = security('FX_IDC:USDBRO', timeframe.period, i)
+OANDAWTICOUSD = security('OANDA:WTICOUSD', timeframe.period, i)
+OANDABCOUSD = security('OANDA:BCOUSD', timeframe.period, i)
+
+avg = avg(TVCUSOIL, TVCUKOIL, FX_IDCUSDWTI, FX_IDCUSDBRO, OANDAWTICOUSD, OANDABCOUSD )
+
+smma = 0.0
+smma := na(smma[1]) ? sma(avg, smoothlen) : (smma[1] * (smoothlen - 1) + avg) / smoothlen
+
+plot = plot(smma, color=smma > 0.5 ? color.blue : color.red, style=plot.style_line, linewidth=3)
+
