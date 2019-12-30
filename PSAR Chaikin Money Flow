@@ -1,0 +1,34 @@
+
+//@version=4
+study(title="PSAR Chaikin Money Flow", shorttitle="PSAR CMF", format=format.price, precision=2)
+//@Github= Wallacewazza
+//@Instagram= Zilch.caeasar 
+//@Gmail= Wallacesiziba@gmail.com
+
+//===========PSAR
+
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+psar = sar(start, increment, maximum)
+
+//===========
+
+length = input(1, minval=1)
+ad = psar==high and psar==low or high==low ? 0 : ((2*psar-low-high)/(high-low))*volume
+mf = sum(ad, length) / sum(volume, length)
+plot(mf*-1, color=color.red, title="MF", style=plot.style_columns)
+hline(0, color=color.gray, title="Zero", linestyle=hline.style_dashed)
+
+lenn = input(25, minval=1, title="EMA Length")
+outema = ema(close, lenn)
+
+
+buy = mf < -0.0001 and low > outema ? #135334 : na
+
+sell = mf > 0.0001 and high < outema ? #531313 : na
+
+
+
+bgcolor(color=buy, transp=0)
+bgcolor(color=sell, transp=0)
