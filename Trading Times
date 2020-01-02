@@ -1,0 +1,9 @@
+//@version=4
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © wallysworld1996
+
+study(title="Trading Times", shorttitle="Trading Times", overlay=true)
+tt = input('0930-1800', type=input.session, title="Trading Times")
+nttime = tt
+bgPlot2 = time(timeframe.period, nttime)
+bgcolor(bgPlot2 and timeframe.isintraday ? color.navy : na, transp=30, title="Time")
