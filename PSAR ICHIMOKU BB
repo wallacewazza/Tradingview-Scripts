@@ -1,0 +1,183 @@
+//@version=4
+study(title="PSAR ICHIMOKU BB", shorttitle="PSAR ICHIMOKU BB", overlay=true)
+
+
+// SAR
+showSAR = input(true, title="=== Show SAR? ===")
+start = input(0.02)
+increment = input(0.02)
+maximum = input(0.2)
+out = sar(start, increment, maximum)
+plot(showSAR?out:na,title="SAR", style=plot.style_cross, color=color.purple, linewidth=2)
+
+
+ro = open
+rc = close
+
+tenkanSenPeriods = input(9, minval=1, title="Tenkan-sen")
+kijunSenPeriods = input(26, minval=1, title="Kijun-sen")
+SenkouSpanBPeriods = input(52, minval=1, title="Senkou Span B")
+displacement = input(26, minval=1, title="Chikou Span (Displacement)")
+
+donchian(out) =>
+    avg(lowest(out), highest(out))
+
+tenkanSen = donchian(tenkanSenPeriods)
+kijunSen = donchian(kijunSenPeriods)
+SenkouSpanA = avg(tenkanSen, kijunSen)
+SenkouSpanB = donchian(SenkouSpanBPeriods)
+
+
+baseline = plot(tenkanSen, color=color.white, linewidth=2, title="Tenkan-sen")
+// plot(kijunSen, color=#991515, title="Kijun-sen")
+// plot(close, offset = -displacement, color=#459915, title="Chikou Span")
+
+p1 = plot(SenkouSpanA, offset=displacement, color=color.green, title="Senkou Span A",transp=100)
+p2 = plot(SenkouSpanB, offset=displacement, color=color.red, title="Senkou Span B", transp=100)
+fill(p1, p2, color=SenkouSpanA > SenkouSpanB ? color.green : color.red)
+
+// Entry/Exit Signals
+tk_cross_bull = tenkanSen > kijunSen
+tk_cross_bear = tenkanSen < kijunSen
+
+price_below_tenkan = open < tenkanSen and close < tenkanSen
+price_above_tenkan = open > tenkanSen and close > tenkanSen
+
+price_below_kinjun = close < kijunSen
+price_above_kinjun = close > kijunSen
+
+tekan_above_kinjun = tenkanSen > kijunSen
+tekan_below_kinjun = tenkanSen < kijunSen
+
+
+
+
+
+ss_high = max(SenkouSpanA[displacement - 1], SenkouSpanB[displacement - 1])
+ss_low = min(SenkouSpanA[displacement - 1], SenkouSpanB[displacement - 1])
+price_inside_kumo = close > ss_high and close < ss_low
+
+price_below_kumo = rc[1] < ro[1] and rc[0] < ro[0] and rc[1] < ss_low
+price_above_kumo = rc[1] > ro[1] and rc[0] > ro[0] and rc[1] > ss_high
+
+cs_cross_bull = mom(close, displacement - 1) > 0
+cs_cross_bear = mom(close, displacement - 1) < 0
+
+bullish = cs_cross_bull and not price_inside_kumo
+bearish = cs_cross_bear and not price_inside_kumo
+
+///////////////////////////////////////////////////
+
+//Inputs and constants.
+length = input(20, minval=2)
+mult = input(2.0, minval=0.001,maxval=50,step = 0.1)
+src = out
+timewindow = input(title="Time window", options = ["Simple","Sawtooth" , "Exponential"], defval="Sawtooth")
+use_linear_regression = input(true, title="Use linear regression?")
+ignore_volume = input(false, title="Ignore Volume?")
+centerscheme = input(title="Centerline color scheme?", options = ["Centerline change","Momentum","RSI hysteresis","Hybrid"], defval="Hybrid")
+bandscheme = input(title="Band color scheme?", options = ["Market type", "Volatility Change","Centerline","Plain"], defval="Centerline")
+
+multiple = 8 // input(8,minval=1,title= "Length multiple for market determination")
+rsi_length = length
+hysteresislength = 7
+t = 1.2
+r = 1.1
+hybrid_parameter = 1.0
+hybrid_trend = 4.5
+
+// Basic function definitions.
+corrvol = ignore_volume ? 1 : nz(volume) + 1  // Corrected volume
+oscillator_coloring(series) => series > 0 ? color.blue : color.blue
+
+volume_sma(series,period) => sma(series*corrvol,period)/sma(corrvol,period)
+volume_ema(series,period) => ema(series*corrvol,period)/ema(corrvol,period)
+volume_wma(series,period) => wma(series*corrvol,period)/wma(corrvol,period)
+
+besselcorrection_sma(period) => (period + 1)/period
+besselcorrection_ema(period) => (period + 1)/(2*(period-1))  // Honestly the only part of Bessels correction that I *actually* care about is that constant factor of 1/2 in the exponential case.
+besselcorrection_wma(period) => 3*period*(period+1)/(3*period*period+period-1)
+// Excercise for the reader: consider how Bessel corrections are affeted by volume, and the difference between frequency & reliability weights!
+
+//volumex_variance(series,period) => (volume_ema(series*series,period) - volume_ema(series,period)*volume_ema(series,period))*besselcorrection_ema(period)
+//volumex_stdev(series,period) => sqrt(volumex_variance(series,period))
+
+mean(series,len) => timewindow == "Exponential" ? volume_ema(series,len) : timewindow == "Sawtooth" ? volume_wma(series,len) : volume_sma(series,len)
+besselcorrection(len) => timewindow == "Exponential" ? besselcorrection_ema(len) : timewindow == "Sawtooth" ? besselcorrection_wma(len) : besselcorrection_sma(len)
+Cov(x,y,len) => (mean(x*y,len) - mean(x,len)*mean(y,len))*besselcorrection(len)
+Var(series,len) => (mean(series*series,len) - mean(series,len)*mean(series,len))*besselcorrection(len)
+sdev(series,len) => sqrt(Var(series,len))
+
+n = bar_index
+linreg_slope(series,len) => Cov(n,series,len)/Var(n,len)
+
+linear_regression(series,len) =>
+    m = linreg_slope(series,len)
+    mean(series,len) + m*(n - mean(n,len))
+    
+lsq_variance(series,len) =>
+    m = linreg_slope(series,len)
+    Var(series,len) + m*m*Var(n,len) - 2*m*Cov(series,n,len)
+    
+lsq_stdev(series,len) => sqrt(lsq_variance(series,len))
+
+rsinorm(series,length) => 
+    rsi = rsi(series,length)
+    (rsi - ema(rsi,4*length))/15
+
+// BB Calculation
+lsrc = log(src)
+basis = use_linear_regression ? linear_regression(lsrc,length)  : mean(lsrc,length)
+dev = mult *(use_linear_regression ? lsq_stdev(lsrc,length) : sdev(lsrc,length))
+upper = basis + dev
+lower = basis - dev
+
+//oscillators
+
+shorttrend = linreg_slope(lsrc,length/2)*length/4 //volume_ema(lsrc,25*length/100) -  volume_ema(lsrc,50*length/100)
+mediumtrend = volume_ema(lsrc,50*length/100) - volume_ema(lsrc,length)
+longtrend = nz(ema(lsrc,length) - ema(lsrc,multiple*length))
+nocleartrend = nz(abs(longtrend)) <= 2*nz(sma(dev,multiple*length),1)
+
+
+rn = rsinorm(src,rsi_length)
+overbought = false
+overbought := (overbought[1] or crossover(rn,t)) and not crossunder(rn,r)
+oversold = false
+oversold := (oversold[1] or crossunder(rn,-t)) and not crossover(rn,-r)
+rsihit = oversold or overbought
+
+rsi_hysteresis = ema(rsihit ? -rn : 0,hysteresislength) + sma(rsihit ? -rn : 0,hysteresislength)
+
+hybrid_oscillator = mediumtrend + hybrid_parameter*rsi_hysteresis*nz(ema(abs(mediumtrend),5*length) + hybrid_trend*sma(rsi_hysteresis,2*hysteresislength)*shorttrend)
+
+centerline_delta = basis - ema(basis,2)
+volatility_delta = dev - ema(dev,2)
+
+
+//centerline plot
+momentumcolor = oscillator_coloring(mediumtrend)
+rsicolor = abs(rsi_hysteresis) > 0.1 ? oscillator_coloring(rsi_hysteresis) : color.purple
+hybridcolor =  oscillator_coloring(hybrid_oscillator)
+deltacolor = oscillator_coloring(centerline_delta)
+colorcenter = centerscheme == "Centerline change" ? deltacolor : centerscheme == "Momentum" ? momentumcolor : centerscheme == "RSI hysteresis" ? rsicolor : hybridcolor
+
+cb = exp(basis)
+plot(cb, title="Centerline", color= colorcenter)
+// band plot
+markettypecolor = nocleartrend ? color.blue : oscillator_coloring(longtrend)
+volatilitycolor = volatility_delta > 0 ? color.yellow : color.maroon
+bandcolor = bandscheme == "Centerline" ? colorcenter :  bandscheme == "Volatility Change" ? volatilitycolor : bandscheme == "Market type" ? markettypecolor : color.teal
+
+pupper = exp(upper)
+plower = exp(lower)
+
+p11 = plot(pupper, title="Upper band", color= bandcolor, transp=92)
+p22 = plot(plower, title="Lower band", color= bandcolor, transp=92)
+fill(p11, p22, title="Band fill", color= bandcolor,transp=92)
+
+//show = false
+
+////////////////////////////////////////////////////
+
+
