@@ -1,0 +1,12 @@
+//@version=4
+study(title="Money Flow", shorttitle="MFI", format=format.price, precision=2)
+length = input(title="Length", type=input.integer, defval=14, minval=1, maxval=2000)
+src = hlc3
+upper = sum(volume * (change(src) <= 0 ? 0 : src), length)
+lower = sum(volume * (change(src) >= 0 ? 0 : src), length)
+mf = rsi(upper, lower)
+plot(mf, color=color.white, linewidth=2)
+overbought=hline(80, title="Overbought", color=#c0c0c0)
+midline=hline(50, title="Overbought", color=#c0c0c0)
+oversold=hline(20, title="Oversold", color=#c0c0c0)
+fill(overbought, oversold, color=#9915ff, transp=90)
